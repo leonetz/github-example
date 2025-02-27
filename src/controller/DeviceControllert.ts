@@ -31,6 +31,7 @@ export const DeviceController = {
                     barcode: true,
                     remark: true,
                     serial: true,
+                    expireDate: true,
                 },
                 where : {
                     status: "active"
@@ -67,24 +68,4 @@ export const DeviceController = {
             return error;
         }
     },
-
-    update: async ({ params, body}: {
-        params : {
-            id: string;
-        },
-        body : {
-            name: string;
-            barcode: string;
-            remark: string;
-            serial: string;
-            expireDate: Date;
-        }
-    }) => {
-        try {
-            await prisma.device.update({
-                body: data
-            })
-        }
-
-    }
 }

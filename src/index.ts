@@ -5,6 +5,7 @@ import { UserController } from "./controller/UserController";
 import { DepartmentController } from "./controller/DepartmentController";
 import { SectionController } from "./controller/SectionController";
 import { DeviceController } from "./controller/DeviceControllert";
+import { RepairRecordController } from "./controller/RepairRecordController";
 
 const app = new Elysia()
   .use(cors())
@@ -35,6 +36,9 @@ const app = new Elysia()
   .get("/api/device/list", DeviceController.list)
   .post("/api/device/create", DeviceController.create)
   .put("/api/device/remove/:id", DeviceController.remove)
+
+  //RepairRecord
+  .post("/api/repairRecord/create", RepairRecordController.create)
 
 
   .listen(3001);
