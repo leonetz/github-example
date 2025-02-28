@@ -8,7 +8,7 @@ export const RepairRecordController = {
                 where : {
                     status : "active"
                 },
-                inclund: {
+                include: {
                     device: true,
                     user: true,
                 },
@@ -23,7 +23,7 @@ export const RepairRecordController = {
         }
     },
 
-    create : async ({body, request, jwt}: {
+    create : async ({body}: {
         body: {
             customerName: string;
             customerPhone: string;
@@ -32,10 +32,8 @@ export const RepairRecordController = {
             deviceBarcode: string;
             deviceSerial: string;
             problem: string;
-            expairDate: Date
-        },
-        request : any,
-        jwt: any,
+            
+        }
     }) => {
         try {
             const row = await prisma.repairRecord.create({
@@ -43,6 +41,31 @@ export const RepairRecordController = {
             });
 
             return { message: "sucess", row: row};
+        } catch(error) {
+            return error;
+        }
+    },
+
+    revice: async ({body}: {
+        body: {
+            amount : number;
+            id: number;
+        }
+    }) => {
+        try {
+            await prisma.repairRecord.update({
+                where: {
+                    id: body.id
+                },
+
+                data: {
+                    amount : body.amount,
+                    payDate : new Date(),
+                    status: "complete"
+                }
+            });
+
+            return { message : "success"};
         } catch(error) {
             return error;
         }

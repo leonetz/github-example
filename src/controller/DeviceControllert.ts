@@ -12,11 +12,11 @@ export const DeviceController = {
         }
     }) => {
         try {
-            await prisma.device.create({
+             const row = await prisma.device.create({
                 data: body
             })
 
-            return { message : "success"}
+            return { message : "success", row : row};
         } catch (error) {
             return error;
         }
