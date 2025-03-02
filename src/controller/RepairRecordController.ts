@@ -1,3 +1,5 @@
+import { Param } from "@prisma/client/runtime/library";
+
 const { PrismaClient } = require("@prisma/client")
 const prisma = new PrismaClient();
 
@@ -46,7 +48,35 @@ export const RepairRecordController = {
         }
     },
 
-    revice: async ({body}: {
+    update: async ({ body, params }: {
+        body: {
+            customerName: string;
+            customerPhone: string;
+            deviceName: string;
+            deviceId?: number;
+            deviceBarcode: string;
+            deviceSerial: string;
+            problem: string;
+            solving: string;
+            expireDate?: Date;
+        },
+        params: { id: string }
+    }) => {
+        try {
+            await prisma.repairRecord.update({
+                where: {
+                    id: parseInt(params.id)
+                },
+                data: body
+            });
+
+            return { message: "success" };
+        } catch (error) {
+            return error;
+        }
+    },
+
+    receive: async ({body}: {
         body: {
             amount : number;
             id: number;

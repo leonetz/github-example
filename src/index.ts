@@ -40,6 +40,7 @@ const app = new Elysia()
   //RepairRecord
   .post("/api/repairRecord/create", RepairRecordController.create)
   .get("/api/repairRecords/list", RepairRecordController.list)
+  .put("/api/repairRecord/receive", RepairRecordController.receive)
 
 
   .listen(3001);
