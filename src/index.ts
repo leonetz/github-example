@@ -17,19 +17,16 @@ const app = new Elysia()
   .get("/", () => "Hello Elysia")
   .post("/api/user/signIn", UserController.signIn)
 
-
   //user
   .get("/api/user/list", UserController.list)
   .post("/api/user/create", UserController.create)
   .put("/api/user/updateUser/:id", UserController.updateUser)
   .delete("/api/user/remove/:id", UserController.remove)
-
-
+  .get("/api/user/listEngineer", UserController.listEngineer)
   
   //departmen and section
   .get("/api/department/list", DepartmentController.list)
   .get("/api/section/listByDepartment/:departmentId", SectionController.listByDepartment)
-
 
 
   //device
@@ -39,8 +36,12 @@ const app = new Elysia()
 
   //RepairRecord
   .post("/api/repairRecord/create", RepairRecordController.create)
+  .put("/api/repairRecord/update/:id", RepairRecordController.update)
   .get("/api/repairRecords/list", RepairRecordController.list)
   .put("/api/repairRecord/receive", RepairRecordController.receive)
+  .put("/api/repairRecord/remove/:id", RepairRecordController.delete)
+  .put("/api/repairRecord/updateStatus/:id", RepairRecordController.updateStatus)
+  .get('/api/income/report/:startDate/:endDate', RepairRecordController.report) // API แสดงรายรับตามช่วงวันที่
 
 
   .listen(3001);

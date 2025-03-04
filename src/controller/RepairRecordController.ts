@@ -1,25 +1,42 @@
-import { Param } from "@prisma/client/runtime/library";
-
-const { PrismaClient } = require("@prisma/client")
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const dayjs = require('dayjs');
 
 export const RepairRecordController = {
     list: async () => {
         try {
             const repairRecords = await prisma.repairRecord.findMany({
-                where : {
-                    status : "active"
-                },
                 include: {
                     device: true,
-                    user: true,
+                    user: true
                 },
                 orderBy: {
                     id: "desc"
                 }
             });
 
-            return repairRecords;
+            // ตรวจสอบว่า engineerId มีค่าไหม ถ้ามีค่าให้หา username ของ engineer มาเพิ่มใน list
+            let list = [];
+
+            for (const repairRecord of repairRecords) {
+                if (repairRecord.engineerId) {
+                    const engineer = await prisma.user.findUnique({
+                        select: {
+                            username: true,
+                            name : true,
+                        },
+                        where: {
+                            id: repairRecord.engineerId
+                        }
+                    });
+
+                    list.push({ ...repairRecord, engineer });
+                } else {
+                    list.push(repairRecord);
+                }
+            }
+
+            return list;
         } catch (error) {
             return error;
         }
@@ -57,10 +74,9 @@ export const RepairRecordController = {
             deviceBarcode: string;
             deviceSerial: string;
             problem: string;
-            solving: string;
             expireDate?: Date;
         },
-        params: { id: string }
+        params: { id: string; }
     }) => {
         try {
             await prisma.repairRecord.update({
@@ -72,6 +88,27 @@ export const RepairRecordController = {
 
             return { message: "success" };
         } catch (error) {
+            return error;
+        }
+    },
+
+    delete : async ({params}: {
+        params : {
+            id : string;
+        }
+    }) => {
+        try {
+            await prisma.repairRecord.update({
+                where: {
+                    id : parseInt(params.id)
+                },
+                data : {
+                    status : "inactive"
+                }
+            });
+
+            return {message : "succes"};
+        } catch(error) {
             return error;
         }
     },
@@ -97,6 +134,58 @@ export const RepairRecordController = {
 
             return { message : "success"};
         } catch(error) {
+            return error;
+        }
+    },
+
+    updateStatus : async ({body, params} : {
+        body: {
+            status : string;
+            solving : string;
+            engineerId : number;
+        },
+        params : {
+            id : string;
+        }
+    }) => {
+        try {
+            await prisma.repairRecord.update({
+                where: {
+                    id: parseInt(params.id)
+                },
+                data : body
+            });
+            return {message : "success"};
+        } catch (error) {
+            return error;
+        }
+    },
+
+    report : async ({ params }: {
+        params : {
+            startDate : string;
+            endDate: string;
+        }
+    }) => {
+        try {
+            const startDate = new Date(params.startDate);
+            const endDate = new Date(params.endDate);
+
+            startDate.setHours(0, 0, 0, 0);
+            endDate.setHours(23, 59, 59, 999);
+
+            const repairRecords = await prisma.repairRecord.findMany({
+                where : {
+                    payDate : {
+                        gte : startDate,
+                        lte : endDate,
+                    },
+                    status : "complete"
+                }
+            });
+
+            return repairRecords;
+        } catch (error) {
             return error;
         }
     }

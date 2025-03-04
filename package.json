@@ -10,6 +10,7 @@
     "@elysiajs/jwt": "^1.2.0",
     "@prisma/client": "^6.3.1",
     "app": "file:",
+    "dayjs": "^1.11.13",
     "elysia": "latest",
     "prisma": "^6.3.1"
   },
